@@ -1,0 +1,60 @@
+This repository contains two kinds of material under different terms.
+이 저장소에는 서로 다른 조건이 적용되는 두 종류의 자료가 있습니다.
+
+======================================================================
+1. CONTENT — All rights reserved / 콘텐츠 — 모든 권리 보유
+======================================================================
+
+The following are NOT covered by the MIT License below. All rights reserved.
+
+  - Artworks and images of artworks: (c) each respective artist.
+  - Photographs of artworks and installations: (c) each respective
+    photographer.
+  - Exhibition texts, poster design, logos, and other exhibition
+    materials, including the files in data/ and public/: (c) 2026
+    아포리즘 Aphorism, unless otherwise credited.
+
+No part of this content may be reproduced, distributed, modified,
+publicly displayed, or used to train, fine-tune, or evaluate machine
+learning or artificial intelligence systems without prior written
+permission from the respective rights holder.
+
+다음 자료에는 아래 MIT 라이선스가 적용되지 않으며, 모든 권리는 각
+권리자에게 있습니다.
+
+  - 작품 및 작품 이미지: 각 작가
+  - 작품·전시 전경 사진: 각 촬영자
+  - 전시 서문 등 텍스트, 포스터 디자인, 로고 및 기타 전시 자료
+    (data/, public/ 폴더의 파일 포함): 별도 표기가 없는 한 아포리즘 Aphorism
+
+권리자의 사전 서면 허락 없이 위 자료를 복제·배포·수정·전시하거나,
+인공지능·머신러닝 시스템의 학습·미세조정·평가에 이용할 수 없습니다.
+
+======================================================================
+2. SOURCE CODE — MIT License / 소스 코드 — MIT 라이선스
+======================================================================
+
+Applies only to the website source code (e.g. files under src/ and
+configuration files), excluding the content listed in section 1.
+
+MIT License
+
+Copyright (c) 2026 아포리즘 Aphorism
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
