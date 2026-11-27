@@ -51,6 +51,9 @@ alter table public.settings enable row level security;
 alter table public.artists  enable row level security;
 revoke all on public.settings from anon, authenticated;
 revoke all on public.artists  from anon, authenticated;
+-- 서버(service role)에는 명시적으로 부여 (자동 부여되지 않는 프로젝트 대비)
+grant usage on schema public to service_role;
+grant select, insert, update, delete on public.settings, public.artists to service_role;
 
 -- ---------------------------------------------------------------- Storage: 이미지 버킷
 -- 공개 읽기(공개 사이트에서 바로 표시), 쓰기는 service role(서버)만.
