@@ -12,6 +12,7 @@
 대시보드 → **SQL Editor** → New query 에서 순서대로 붙여넣고 Run:
 
 1. `supabase/migrations/0001_init.sql` — settings·artists 테이블, RLS(외부 차단), images 버킷
+   - 2026-11-27 이전에 0001을 실행했다면 `0002_grant_service_role.sql`도 실행
 2. `supabase/seed.sql` — 전시 설정 1행 + 작가 8명 더미 데이터 (작가별 편집 토큰은 DB가 랜덤 생성)
 
 둘 다 여러 번 실행해도 안전하다. seed는 작가 내용을 더미로 되돌리므로 실제 내용이 들어간 뒤에는 실행하지 말 것.
@@ -33,6 +34,15 @@ Vercel 프로젝트 → Settings → Environment Variables 에 `SUPABASE_URL`, `
 (Production·Preview 모두). `NEXT_PUBLIC_` 접두사를 붙이지 않는다. 추가 후 Redeploy.
 
 환경변수가 없으면 사이트는 `data/sample.json`으로 동작한다 (로컬 개발용).
+
+## 문제 해결
+
+- 빌드 오류 `permission denied for table artists`
+  1. `SUPABASE_SERVICE_ROLE_KEY`가 **Secret key**(`sb_secret_...` 또는 `service_role`)인지 확인.
+     publishable(`sb_publishable_...`)·anon 키면 이 오류가 난다.
+  2. `0002_grant_service_role.sql` 실행.
+- 빌드 오류 `Invalid path specified in request URL` → `SUPABASE_URL`은 `https://xxxx.supabase.co`까지만.
+- 환경변수를 고친 뒤에는 Vercel에서 **최신 커밋으로** 다시 배포해야 반영된다.
 
 ## 동작 메모
 
