@@ -7,6 +7,7 @@
       "sort_order": 1,
       "name": "김미내",
       "profile_image": "/sample/kim-minae/profile.webp",
+      "portrait_image": "/sample/kim-minae/portrait.webp",
       "bio": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliq.",
       "education": [
         {
@@ -117,6 +118,7 @@
       "sort_order": 2,
       "name": "김태현",
       "profile_image": "/sample/kim-taehyun/profile.webp",
+      "portrait_image": "/sample/kim-taehyun/portrait.webp",
       "bio": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliq.",
       "education": [
         {
@@ -227,6 +229,7 @@
       "sort_order": 3,
       "name": "맹욱재",
       "profile_image": "/sample/maeng-ukjae/profile.webp",
+      "portrait_image": "/sample/maeng-ukjae/portrait.webp",
       "bio": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliq.",
       "education": [
         {
@@ -337,6 +340,7 @@
       "sort_order": 4,
       "name": "박하영",
       "profile_image": "/sample/park-hayoung/profile.webp",
+      "portrait_image": "/sample/park-hayoung/portrait.webp",
       "bio": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliq.",
       "education": [
         {
@@ -447,6 +451,7 @@
       "sort_order": 5,
       "name": "시언",
       "profile_image": "/sample/syeon/profile.webp",
+      "portrait_image": "/sample/syeon/portrait.webp",
       "bio": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliq.",
       "education": [
         {
@@ -557,6 +562,7 @@
       "sort_order": 6,
       "name": "이민영",
       "profile_image": "/sample/lee-minyoung/profile.webp",
+      "portrait_image": "/sample/lee-minyoung/portrait.webp",
       "bio": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliq.",
       "education": [
         {
@@ -667,6 +673,7 @@
       "sort_order": 7,
       "name": "이철영",
       "profile_image": "/sample/lee-cheolyoung/profile.webp",
+      "portrait_image": "/sample/lee-cheolyoung/portrait.webp",
       "bio": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliq.",
       "education": [
         {
@@ -777,6 +784,7 @@
       "sort_order": 8,
       "name": "필독",
       "profile_image": "/sample/pildok/profile.webp",
+      "portrait_image": "/sample/pildok/portrait.webp",
       "bio": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliq.",
       "education": [
         {

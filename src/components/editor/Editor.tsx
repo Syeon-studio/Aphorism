@@ -43,12 +43,12 @@ type Notice = { kind: "ok" | "error"; text: string; details?: string[] } | null;
 
 const CLOSED_MESSAGE = "수정 기간이 종료되었습니다. 변경이 필요하면 관리자에게 연락해주세요.";
 
-/** 빈 입력 줄을 채운 편집용 상태 (학력 3줄·전시 경력 10줄) */
+/** 빈 입력 줄을 채운 편집용 상태 (학력 3줄·전시 경력 5줄) */
 function withBlankRows(c: ArtistContent): ArtistContent {
   return {
     ...c,
     education: padRows(c.education, 3, EMPTY_EDUCATION),
-    exhibitions: padRows(c.exhibitions, 10, EMPTY_EXHIBITION),
+    exhibitions: padRows(c.exhibitions, 5, EMPTY_EXHIBITION),
   };
 }
 
@@ -102,7 +102,7 @@ export default function Editor(props: EditorProps) {
 
   /* -------------------------------------------------------------- 사진 */
 
-  async function handleImage(key: string, file: File, kind: "work" | "profile") {
+  async function handleImage(key: string, file: File, kind: "work" | "profile" | "portrait") {
     setNotice(null);
     setUploads((u) => ({ ...u, [key]: { phase: "processing" } }));
     try {
@@ -123,6 +123,7 @@ export default function Editor(props: EditorProps) {
       if (res.status === 423) setClosed(true);
       if (res.status !== 200 || !res.body) throw new ImageError(res.body?.error ?? "업로드에 실패했습니다.");
       if (kind === "profile") set({ profile_image: res.body.image ?? "" });
+      else if (kind === "portrait") set({ portrait_image: res.body.image ?? "" });
       else
         setWork(key, {
           image_full: res.body.image_full ?? "",
@@ -306,19 +307,36 @@ export default function Editor(props: EditorProps) {
         </h2>
         <fieldset disabled={locked} className="mt-4 grid gap-5 tablet:grid-cols-[200px_1fr]">
           <legend className="sr-only">작가 정보</legend>
-          <div className="max-w-[200px]">
-            <p className="mb-1.5 text-sm font-bold">대표 사진</p>
-            <ImagePicker
-              src={src(content.profile_image)}
-              alt="대표 사진"
-              aspect="1 / 1"
-              state={uploads.profile ?? null}
-              disabled={locked}
-              onSelect={(f) => handleImage("profile", f, "profile")}
-              onRemove={() => set({ profile_image: "" })}
-              label="대표 사진 올리기"
-            />
-            <p className="mt-1 text-xs opacity-60">메인 작가 목록에는 가운데를 기준으로 정사각형으로 잘려 보입니다.</p>
+          <div className="grid max-w-[200px] content-start gap-6">
+            <div>
+              <p className="mb-1.5 text-sm font-bold">작가 프로필 사진</p>
+              <ImagePicker
+                src={src(content.portrait_image ?? "")}
+                alt="작가 프로필 사진"
+                aspect="1 / 1"
+                state={uploads.portrait ?? null}
+                disabled={locked}
+                onSelect={(f) => handleImage("portrait", f, "portrait")}
+                onRemove={() => set({ portrait_image: "" })}
+                label="프로필 사진 올리기"
+              />
+              <p className="mt-1 text-xs font-bold">하얀색 배경의 사진을 올려주세요.</p>
+              <p className="mt-0.5 text-xs opacity-60">가운데를 기준으로 자동으로 정사각형으로 잘립니다.</p>
+            </div>
+            <div>
+              <p className="mb-1.5 text-sm font-bold">대표 작품 사진</p>
+              <ImagePicker
+                src={src(content.profile_image)}
+                alt="대표 작품 사진"
+                aspect="1 / 1"
+                state={uploads.profile ?? null}
+                disabled={locked}
+                onSelect={(f) => handleImage("profile", f, "profile")}
+                onRemove={() => set({ profile_image: "" })}
+                label="대표 작품 사진 올리기"
+              />
+              <p className="mt-1 text-xs opacity-60">메인 작가 목록에 가운데를 기준으로 정사각형으로 잘려 보입니다.</p>
+            </div>
           </div>
           <div className="grid gap-5">
             <TextField label="작가명" required value={content.name} onChange={(v) => set({ name: v })} maxLength={LIMITS.name} />

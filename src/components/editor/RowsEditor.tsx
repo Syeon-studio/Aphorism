@@ -105,7 +105,7 @@ export function ExhibitionRows({
   );
 }
 
-/** 편집 화면 기본 줄 수: 학력 3줄, 전시 경력 10줄 (모자라면 빈 줄로 채움) */
+/** 편집 화면 기본 줄 수: 학력 3줄, 전시 경력 5줄 (모자라면 빈 줄로 채움) */
 export function padRows<T>(list: T[], min: number, empty: T): T[] {
   return list.length >= min ? list : [...list, ...Array.from({ length: min - list.length }, () => ({ ...empty }))];
 }

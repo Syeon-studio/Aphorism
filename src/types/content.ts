@@ -33,8 +33,10 @@ export type Work = {
 /** 작가 페이지 내용 (draft / published 공통) */
 export type ArtistContent = {
   name: string;
-  /** 목록 썸네일용 대표 사진 */
+  /** 대표 작품 사진: 메인 작가 목록 썸네일(정사각형으로 잘려 보임)·공유 미리보기 */
   profile_image: string;
+  /** 작가 프로필 사진: 업로드 시 정사각형으로 잘라 저장 (흰 배경 권장). 작가 상세 페이지에 표시 */
+  portrait_image?: string;
   bio: string;
   /** 학력: 한 줄 = 학위 · 학교 · 전공 (출력 시 열 정렬) */
   education: EducationEntry[];

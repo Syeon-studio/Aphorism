@@ -117,6 +117,13 @@ async function main() {
 
     // 대표 사진 (4:5)
     await writeWebp(svgArt(800, 1000, hue, i * 100, "PROFILE"), path.join(dir, "profile.webp"), 600);
+    // 작가 프로필 사진 (흰 배경 정사각형, 회색 실루엣)
+    const portrait = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">
+      <rect width="800" height="800" fill="#ffffff"/>
+      <circle cx="400" cy="310" r="150" fill="#d6d6d6"/>
+      <ellipse cx="400" cy="760" rx="270" ry="250" fill="#d6d6d6"/>
+    </svg>`);
+    await writeWebp(portrait, path.join(dir, "portrait.webp"), 800);
 
     const works = [];
     for (let j = 0; j < 4; j++) {
@@ -153,6 +160,7 @@ async function main() {
       sort_order: i + 1,
       name,
       profile_image: `/sample/${slug}/profile.webp`,
+      portrait_image: `/sample/${slug}/portrait.webp`,
       bio: BIO,
       education: EDU,
       exhibitions: EXH,
