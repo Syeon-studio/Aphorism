@@ -5,7 +5,7 @@
 
 @AGENTS.md
 
-## 전시 정보 (원본: `src/lib/exhibition.ts`)
+## 전시 정보 (원본: DB settings 행. 기본값 `src/lib/exhibition.ts`)
 
 - 기간: 2026-12-22(화) ~ 12-31(목), 매일 10:00–18:00, 첫날은 14:00 오픈(오프닝), 12-25(금) 휴관
 - 장소: 서울 강남구 역삼로7길 16 역삼1동복합문화센터 1층 · 입장료 무료 · 한국어 단일
@@ -26,7 +26,8 @@ npm run dev     # 개발 서버 (http://localhost:3000)
 npm run lint
 npm run typecheck  # 라우트 타입 생성 + tsc
 npm run build   # 커밋 전 통과 확인
-node scripts/generate-sample.mjs  # 더미 데이터·이미지 재생성 (1단계 전용)
+node scripts/generate-sample.mjs  # 더미 데이터·이미지 재생성
+node scripts/generate-seed-sql.mjs  # sample.json → supabase/seed.sql 재생성
 ```
 
 ## 구조
@@ -35,17 +36,20 @@ node scripts/generate-sample.mjs  # 더미 데이터·이미지 재생성 (1단�
 src/app/                    / (메인), /artists/[slug] (작가 상세), robots.ts, sitemap.ts, not-found.tsx
 src/components/Poster/      포스터 (독립 폴더. 디자인 교체는 이 안에서만)
 src/components/             ArtistGrid, ExhibitionInfo, ArtistWorks(메이슨리), Lightbox, WorkCredit, Reveal, Footer
-src/lib/data.ts             공개 데이터 접근 계층 — 2단계에서 이 파일 내부만 Supabase로 교체
-src/lib/                    exhibition.ts(전시 정보), credit.ts(크레딧), masonry.ts(열 배치), site.ts(사이트 URL)
+src/lib/data.ts             공개 데이터 접근 계층 (getSettings, getArtists…). Supabase 환경변수 없으면 sample.json
+src/lib/supabase/server.ts  서버 전용 Supabase 클라이언트(service key), imageUrl(Storage 경로→URL)
+src/lib/                    exhibition.ts(기본 설정·저작권자), format.ts(KST 날짜 표기), credit.ts, masonry.ts, site.ts
+supabase/                   migrations/0001_init.sql(스키마), seed.sql(자동 생성), README.md(설정 절차)
 src/types/content.ts        작가·작품 JSON 타입 (기획서 4장)
 data/sample.json            1단계 더미 데이터 (scripts/generate-sample.mjs로 생성. 작가명만 실명)
-public/sample/              더미 이미지 (2단계 이후 삭제)
+public/sample/              더미 이미지 (seed 데이터가 참조. 실제 사진으로 모두 교체된 뒤 삭제)
 ```
 
 ## 개발 단계 (기획서 6장)
 
 1. 공개 사이트 — `data/sample.json`(작가 8명 실명 + 더미 소개·작품 4점)으로 메인·상세·라이트박스. 포스터는 임시 SVG  ✅ 완료 (작가 slug는 임시 로마자 — 확인 필요)
-2. DB 연결 — Supabase 테이블(settings, artists)·Storage, 공개 사이트가 published 읽기  ← 다음
+2. DB 연결 — Supabase 테이블(settings, artists)·Storage, 공개 사이트가 published 읽기  ✅ 코드 완료 (Supabase 프로젝트 생성·환경변수 설정 대기)
+   다음 ← 3단계
 3. 작가 편집 화면 `/edit/[token]` — 정보·작품 입력, 순서 변경, 이미지 업로드, 임시저장·완료
 4. 관리자 화면 `/admin/[admin_token]` — 작가 추가·토큰, 전시 정보, 마감 일시, 미공개 변경, 백업 복구
 5. 마감 — 최종 포스터, `public/og.png`(1200×630), 실기기 테스트, 성능 점검
@@ -64,6 +68,11 @@ public/sample/              더미 이미지 (2단계 이후 삭제)
 - 이미지: `next/image`, 썸네일(600px)만 목록에서 로드. 모든 작품 이미지 alt = 작품 제목.
 - `prefers-reduced-motion`이면 애니메이션 끔 (globals.css에 전역 처리 있음).
 - 편집·관리 페이지는 `robots: { index: false }` 메타데이터를 건다 (헤더 noindex도 next.config.ts에 있음).
+- 데이터: 공개 페이지는 `src/lib/data.ts`만 사용. `'use cache'` + `cacheLife("hours")` + `cacheTag`.
+  저장 후 `revalidateTag(CACHE_TAGS.artists | settings, "max")` (Next 16: 인자 2개 필수, 1개짜리는 deprecated).
+  공개 쿼리에서 `edit_token`·`draft`를 select하지 않는다.
+- DB 보안: RLS 켜고 정책 없음(anon 차단), 접근은 service key(서버)만. 날짜 표시는 `src/lib/format.ts`(Asia/Seoul 고정).
+- 이미지 경로: DB에는 Storage 버킷 내 경로(`{artist_id}/{work_id}_thumb.webp`) 저장, 표시할 때 `imageUrl()`로 변환.
 - 브라우저는 DB에 직접 쓰지 않는다. 저장은 Route Handler 경유, 서버에서 토큰↔작가 일치만 확인.
 
 ## 저작권·크레딧

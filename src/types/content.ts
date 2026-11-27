@@ -49,3 +49,25 @@ export type PublicArtist = {
   slug: string;
   sort_order: number;
 } & ArtistContent;
+
+/** 전시 설정 (Supabase settings 1행, 기획서 4장). 날짜는 KST 기준 */
+export type Settings = {
+  exhibition_title: string;
+  /** "2026-12-22" */
+  period_start: string;
+  period_end: string;
+  venue: string;
+  address: string;
+  map_url: string;
+  /** 자유 텍스트. 예: "매일 10:00–18:00 (12월 22일은 14:00 오픈)" */
+  hours: string;
+  /** ["2026-12-25"] */
+  closed_dates: string[];
+  /** ISO 8601 (timestamptz) */
+  opening_at: string | null;
+  admission: string;
+  contact_email: string;
+  instagram: string;
+  intro_text: string;
+  edit_deadline: string | null;
+};

@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import Footer from "@/components/Footer";
-import { COPYRIGHT_HOLDER, EXHIBITION } from "@/lib/exhibition";
+import { getSettings } from "@/lib/data";
+import { COPYRIGHT_HOLDER } from "@/lib/exhibition";
+import { formatPeriod } from "@/lib/format";
 import { getSiteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -13,25 +15,25 @@ const notoSansKr = Noto_Sans_KR({
   display: "swap",
 });
 
-const description = `${EXHIBITION.periodLabel} · ${EXHIBITION.venue}`;
-
-export const metadata: Metadata = {
-  metadataBase: new URL(getSiteUrl()),
-  title: {
-    default: EXHIBITION.title,
-    template: `%s | ${EXHIBITION.title}`,
-  },
-  description,
-  authors: [{ name: COPYRIGHT_HOLDER }],
-  openGraph: {
-    type: "website",
-    locale: "ko_KR",
-    siteName: EXHIBITION.title,
-    title: EXHIBITION.title,
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  const title = settings.exhibition_title;
+  const description = `${formatPeriod(settings)} · ${settings.venue}`;
+  return {
+    metadataBase: new URL(getSiteUrl()),
+    title: { default: title, template: `%s | ${title}` },
     description,
-    // TODO(5단계): public/og.png (1200×630) 추가
-  },
-};
+    authors: [{ name: COPYRIGHT_HOLDER }],
+    openGraph: {
+      type: "website",
+      locale: "ko_KR",
+      siteName: title,
+      title,
+      description,
+      // TODO(5단계): public/og.png (1200×630) 추가
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",

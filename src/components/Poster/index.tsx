@@ -1,5 +1,4 @@
 import Composition from "./Composition";
-import { EXHIBITION } from "@/lib/exhibition";
 
 /**
  * 메인 첫 화면 포스터 (임시 디자인, 5단계에서 최종 시안으로 교체).
@@ -8,13 +7,17 @@ import { EXHIBITION } from "@/lib/exhibition";
  * 디자인만 바꿀 때는 이 폴더 안만 수정하면 된다.
  * 안전 영역(글자 배치 가능 범위)은 각 구도 주석 참고.
  */
+/** 포스터에 그려진 글자와 같은 내용 (포스터 디자인을 바꾸면 함께 수정) */
+const POSTER_LABEL =
+  "Overload: 감정의 풍경 전시 포스터. 2026년 12월 22일부터 12월 31일까지, 역삼1동복합문화센터 1층";
+
 export default function Poster() {
   return (
     <section className="poster relative h-svh w-full overflow-hidden">
       {/* role="img" 안의 요소는 보조기기에 숨겨지므로 스크롤 링크는 바깥에 둔다 */}
       <div
         role="img"
-        aria-label={`${EXHIBITION.title} 전시 포스터. ${EXHIBITION.periodLabel}, ${EXHIBITION.venue}`}
+        aria-label={POSTER_LABEL}
         className="absolute inset-0"
       >
       {/* 모바일 900×1600 — 안전 영역 x 150–750, y 220–1380 */}

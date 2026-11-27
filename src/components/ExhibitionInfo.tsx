@@ -1,36 +1,42 @@
 import type { ReactNode } from "react";
-import { EXHIBITION } from "@/lib/exhibition";
+import { formatClosed, formatDateTime, formatPeriod } from "@/lib/format";
+import type { Settings } from "@/types/content";
 
 /** 전시 정보 · Contact */
-export default function ExhibitionInfo() {
-  const e = EXHIBITION;
-  const instagramHandle = e.instagram.replace(/^@/, "");
-  const hasContact = Boolean(e.contactEmail || instagramHandle);
+export default function ExhibitionInfo({ settings: e }: { settings: Settings }) {
+  const instagramHandle = e.instagram.trim().replace(/^@/, "");
+  const hasContact = Boolean(e.contact_email || instagramHandle);
 
-  const rows: [string, ReactNode][] = [
-    ["기간", e.periodLabel],
-    ["오프닝", "2026년 12월 22일(화) 14:00"],
-    ["운영시간", e.hoursLabel],
-    ["휴관", e.closedLabel],
-    ["입장료", e.admission],
+  const rows: [string, ReactNode][] = (
     [
-      "장소",
-      <>
-        {e.venue}
-        <br />
-        {e.address}
-        <br />
-        <a
-          href={e.mapUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-1 inline-block underline underline-offset-4"
-        >
-          지도 보기 ↗
-        </a>
-      </>,
-    ],
-  ];
+      ["기간", formatPeriod(e)],
+      ["오프닝", formatDateTime(e.opening_at)],
+      ["운영시간", e.hours],
+      ["휴관", formatClosed(e)],
+      ["입장료", e.admission],
+    ] as [string, ReactNode][]
+  ).filter(([, v]) => Boolean(v));
+  rows.push([
+    "장소",
+    <>
+      {e.venue}
+      <br />
+      {e.address}
+      {e.map_url && (
+        <>
+          <br />
+          <a
+            href={e.map_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-block underline underline-offset-4"
+          >
+            지도 보기 ↗
+          </a>
+        </>
+      )}
+    </>,
+  ]);
 
   return (
     <div className="grid gap-12 desktop:grid-cols-2">
@@ -50,12 +56,12 @@ export default function ExhibitionInfo() {
         <h2 className="text-xl font-bold">Contact</h2>
         {hasContact ? (
           <dl className="mt-6 grid grid-cols-[5.5rem_1fr] gap-x-4 gap-y-3">
-            {e.contactEmail && (
+            {e.contact_email && (
               <>
                 <dt className="opacity-60">이메일</dt>
                 <dd>
-                  <a href={`mailto:${e.contactEmail}`} className="underline underline-offset-4">
-                    {e.contactEmail}
+                  <a href={`mailto:${e.contact_email}`} className="underline underline-offset-4">
+                    {e.contact_email}
                   </a>
                 </dd>
               </>

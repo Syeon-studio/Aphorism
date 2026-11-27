@@ -6,6 +6,8 @@ import { getAdjacentArtists, getArtist, getArtists } from "@/lib/data";
 
 export async function generateStaticParams() {
   const artists = await getArtists();
+  // cacheComponents에서는 빈 배열이 빌드 오류 → 공개된 작가가 없으면 404가 될 자리표시자 하나
+  if (artists.length === 0) return [{ slug: "_" }];
   return artists.map((a) => ({ slug: a.slug }));
 }
 
