@@ -7,7 +7,7 @@
  *   실제 사진은 3단계 편집 화면에서 Storage로 업로드된다.
  * - edit_token은 넣지 않는다 → DB가 랜덤 생성 (저장소에 토큰이 남지 않도록).
  * - 이미 있는 작가(slug 같음)는 내용만 덮어쓰고 토큰은 유지한다.
- * - settings는 이미 있으면 건드리지 않는다 (관리자가 고친 값 보호).
+ * - settings가 이미 있으면 서문(intro_text)만 더미로 덮어쓴다 (연락처·마감 등 관리자가 고친 값은 유지).
  */
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -39,7 +39,7 @@ const lines = [
   "",
   "insert into public.settings (id, exhibition_title, period_start, period_end, venue, address, map_url, hours, closed_dates, opening_at, admission, intro_text)",
   `values (1, ${lit(S.exhibition_title)}, ${lit(S.period_start)}, ${lit(S.period_end)}, ${lit(S.venue)}, ${lit(S.address)}, ${lit(S.map_url)}, ${lit(S.hours)}, array[${S.closed_dates.map(lit).join(", ")}]::date[], ${lit(S.opening_at)}, ${lit(S.admission)}, ${lit(sample.intro_text)})`,
-  "on conflict (id) do nothing;",
+  "on conflict (id) do update set intro_text = excluded.intro_text, updated_at = now();",
   "",
 ];
 

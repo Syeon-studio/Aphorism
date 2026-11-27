@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Editor from "@/components/editor/Editor";
 import { getArtistById } from "@/lib/admin/server";
 import { ADMIN_METADATA, requireAdmin } from "@/lib/admin/load";
-import { EMPTY_CONTENT, hasUnpublishedChanges } from "@/lib/content";
+import { coerceContent, hasUnpublishedChanges } from "@/lib/content";
 import { imageBaseUrl } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "관리자 · 작가 편집", ...ADMIN_METADATA };
@@ -33,7 +33,7 @@ async function Body({ params }: Pick<PageProps<"/admin/[adminToken]/artists/[id]
       artistId={artist.id}
       slug={artist.slug}
       imageBase={imageBaseUrl()}
-      initialContent={artist.draft ?? artist.published ?? EMPTY_CONTENT}
+      initialContent={coerceContent(artist.draft ?? artist.published)}
       initialUpdatedAt={artist.updated_at}
       publishedAt={artist.published_at}
       hasPublished={Boolean(artist.published)}

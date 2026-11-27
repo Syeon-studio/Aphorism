@@ -1,7 +1,7 @@
 import "server-only";
 import { connection } from "next/server";
 import { notFound } from "next/navigation";
-import { EMPTY_CONTENT, hasUnpublishedChanges } from "@/lib/content";
+import { coerceContent, hasUnpublishedChanges } from "@/lib/content";
 import { getArtistByToken, getEditDeadline, isPastDeadline } from "@/lib/edit/server";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 
@@ -12,7 +12,7 @@ export async function loadEditable(token: string) {
   const artist = await getArtistByToken(token);
   if (!artist) notFound();
   const deadline = await getEditDeadline();
-  const content = artist.draft ?? artist.published ?? EMPTY_CONTENT;
+  const content = coerceContent(artist.draft ?? artist.published);
   return {
     artist,
     content,

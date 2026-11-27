@@ -36,10 +36,10 @@ export type ArtistContent = {
   /** 목록 썸네일용 대표 사진 */
   profile_image: string;
   bio: string;
-  /** 여러 줄 자유 텍스트, 줄바꿈 그대로 표시 */
-  education: string;
-  /** 여러 줄 자유 텍스트, 줄바꿈 그대로 표시 */
-  exhibitions: string;
+  /** 학력: 한 줄 = 학위 · 학교 · 전공 (출력 시 열 정렬) */
+  education: EducationEntry[];
+  /** 전시 경력: 한 줄 = 년도 · 전시제목 · 전시장소 · 지역 (출력: 2026  「제목」, 장소, 지역) */
+  exhibitions: ExhibitionEntry[];
   website?: string;
   works: Work[];
 };
@@ -70,4 +70,19 @@ export type Settings = {
   instagram: string;
   intro_text: string;
   edit_deadline: string | null;
+};
+
+/** 학력 한 줄. 예: { degree: "MFA", school: "OO대학교 대학원", major: "회화" } */
+export type EducationEntry = {
+  degree: string;
+  school: string;
+  major: string;
+};
+
+/** 전시 경력 한 줄. 전시제목은 출력할 때 「」를 자동으로 붙인다 (입력에는 넣지 않음) */
+export type ExhibitionEntry = {
+  year: string;
+  title: string;
+  venue: string;
+  region: string;
 };

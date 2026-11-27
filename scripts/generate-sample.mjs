@@ -40,18 +40,37 @@ const MEDIA = [
   "혼합 매체", "단채널 영상, 컬러, 사운드", "아크릴, 패널", "",
 ];
 
-const BIO =
-  "(더미 소개글) 일상에서 넘쳐흐르는 감정의 결을 붙잡아 화면 위에 펼쳐 놓는다. " +
-  "감각이 과부하되는 순간과 그 이후에 남는 고요를 함께 기록하며, " +
-  "보이지 않는 감정의 풍경을 색과 형태로 번역하는 작업을 이어오고 있다.";
-const EDU = "(더미) OO대학교 대학원 회화과 졸업\n(더미) OO대학교 미술대학 서양화과 졸업";
-const EXH =
-  "개인전\n2025 (더미) 「감정의 온도」, 갤러리 OO, 서울\n\n" +
-  "단체전\n2026 Overload: 감정의 풍경, 역삼1동복합문화센터, 서울\n" +
-  "2024 (더미) 「사이의 풍경」, OO아트스페이스, 서울";
-const DESC =
-  "(더미 작품 설명) 감정이 한계를 넘어 흘러넘치는 순간을 겹겹의 색면으로 표현했다.\n" +
-  "가까이서 볼 때와 멀리서 볼 때 서로 다른 풍경이 드러나도록 구성했다.";
+// 더미 텍스트: Lorem Ipsum (서문 300자 · 작가소개 200자 · 작품설명 150자)
+const LOREM =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
+  "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " +
+  "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. " +
+  "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ";
+
+/** 정확히 n자, 단어 단위로 자르고 마침표로 끝낸다 (자투리 칸은 다음 단어의 앞부분으로 채움) */
+function lorem(n) {
+  const words = LOREM.repeat(4).replace(/[.,]/g, "").trim().split(/\s+/);
+  let t = "";
+  let i = 0;
+  while ((t ? t.length + 1 : 0) + words[i].length <= n - 1) {
+    t += (t ? " " : "") + words[i];
+    i++;
+  }
+  const rest = n - 1 - t.length;
+  if (rest >= 2) t += " " + words[i].slice(0, rest - 1);
+  else if (rest === 1) t += words[i][0];
+  return t + ".";
+}
+
+const INTRO = lorem(300);
+const BIO = lorem(200);
+const DESC = lorem(150);
+const EDU = [
+  { degree: "MFA", school: "OO대학교 대학원", major: "회화" },
+  { degree: "BFA", school: "OO대학교", major: "서양화" },
+];
+// 전시 경력 더미: "2026 「전시제목」, 전시장, 서울"로 통일
+const EXH = Array.from({ length: 5 }, () => ({ year: "2026", title: "전시제목", venue: "전시장", region: "서울" }));
 
 function hsl(h, s, l) {
   return `hsl(${h % 360}, ${s}%, ${l}%)`;
@@ -124,7 +143,7 @@ async function main() {
         medium: MEDIA[(i + j) % MEDIA.length],
         size: j === 2 ? "" : `${rw * 20} × ${rh * 20} cm`,
         etc: j === 1 ? "(더미) 에디션 1/3" : "",
-        description: j === 2 ? "" : DESC,
+        description: DESC,
         photo_credit: j % 2 === 0 ? "(더미) 홍길동" : "",
       });
     }
@@ -144,11 +163,7 @@ async function main() {
 
   const data = {
     _note: "1단계 더미 데이터. 작가명 외 모든 내용은 임시. scripts/generate-sample.mjs로 생성",
-    intro_text:
-      "(임시 서문) 우리는 매일 감당하기 어려운 양의 감정을 마주한다. " +
-      "기쁨과 불안, 피로와 설렘이 한꺼번에 밀려드는 시대에, 감정은 종종 넘쳐흐르고 과부하된다.\n\n" +
-      "《Overload: 감정의 풍경》은 여덟 명의 작가가 각자의 언어로 그려낸 감정의 지형도이다. " +
-      "넘쳐흐르는 감정을 억누르기보다 그것이 만들어내는 풍경을 가만히 들여다보고자 한다.",
+    intro_text: INTRO,
     artists,
   };
   await fs.mkdir(path.dirname(OUT_JSON), { recursive: true });

@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import DraftPreview from "@/components/DraftPreview";
 import { getArtistById } from "@/lib/admin/server";
 import { ADMIN_METADATA, requireAdmin } from "@/lib/admin/load";
-import { EMPTY_CONTENT } from "@/lib/content";
+import { coerceContent } from "@/lib/content";
 
 export const metadata: Metadata = { title: "관리자 · 미리보기", ...ADMIN_METADATA };
 
@@ -23,5 +23,5 @@ async function Body({ params }: Pick<PageProps<"/admin/[adminToken]/artists/[id]
   if (!(await requireAdmin(adminToken))) return <p className="px-4 py-24 text-center">DB가 연결되지 않았습니다.</p>;
   const artist = await getArtistById(id);
   if (!artist) notFound();
-  return <DraftPreview content={artist.draft ?? artist.published ?? EMPTY_CONTENT} />;
+  return <DraftPreview content={coerceContent(artist.draft ?? artist.published)} />;
 }

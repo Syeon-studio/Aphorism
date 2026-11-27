@@ -1,4 +1,4 @@
-import type { ArtistContent, Work } from "@/types/content";
+import type { ArtistContent, EducationEntry, ExhibitionEntry, Work } from "@/types/content";
 
 /**
  * 작가 콘텐츠 검증·정리 (서버·브라우저 공용, 서버 판단이 최종).
@@ -10,8 +10,17 @@ import type { ArtistContent, Work } from "@/types/content";
 export const LIMITS = {
   name: 50,
   bio: 3000,
-  education: 3000,
-  exhibitions: 6000,
+  // 학력 한 줄
+  educationRows: 10,
+  degree: 30,
+  school: 80,
+  major: 80,
+  // 전시 경력 한 줄
+  exhibitionRows: 80,
+  exYear: 20,
+  exTitle: 150,
+  exVenue: 80,
+  exRegion: 40,
   website: 300,
   works: 40,
   title: 200,
@@ -61,15 +70,26 @@ export function validateContent(
 
   const name = str(src.name);
   const bio = str(src.bio);
-  const education = str(src.education);
-  const exhibitions = str(src.exhibitions);
+  const education = toEducation(src.education);
+  const exhibitions = toExhibitions(src.exhibitions);
   const website = str(src.website);
   const profile_image = str(src.profile_image);
 
   tooLong("작가명", name, LIMITS.name);
   tooLong("소개글", bio, LIMITS.bio);
-  tooLong("학력", education, LIMITS.education);
-  tooLong("전시 경력", exhibitions, LIMITS.exhibitions);
+  if (education.length > LIMITS.educationRows) errors.push(`학력은 ${LIMITS.educationRows}줄까지 입력할 수 있습니다.`);
+  education.forEach((e, i) => {
+    tooLong(`학력 ${i + 1}번째 줄 학위`, e.degree, LIMITS.degree);
+    tooLong(`학력 ${i + 1}번째 줄 학교`, e.school, LIMITS.school);
+    tooLong(`학력 ${i + 1}번째 줄 전공`, e.major, LIMITS.major);
+  });
+  if (exhibitions.length > LIMITS.exhibitionRows) errors.push(`전시 경력은 ${LIMITS.exhibitionRows}줄까지 입력할 수 있습니다.`);
+  exhibitions.forEach((e, i) => {
+    tooLong(`전시 경력 ${i + 1}번째 줄 년도`, e.year, LIMITS.exYear);
+    tooLong(`전시 경력 ${i + 1}번째 줄 전시제목`, e.title, LIMITS.exTitle);
+    tooLong(`전시 경력 ${i + 1}번째 줄 전시장소`, e.venue, LIMITS.exVenue);
+    tooLong(`전시 경력 ${i + 1}번째 줄 지역`, e.region, LIMITS.exRegion);
+  });
   tooLong("웹사이트", website, LIMITS.website);
   if (website && !/^https?:\/\/[^\s]+$/i.test(website)) {
     errors.push("웹사이트 주소는 http:// 또는 https://로 시작해야 합니다.");
@@ -135,6 +155,49 @@ export function validateContent(
   };
 }
 
+/* ------------------------------------------------------------------ 학력·전시 경력 */
+
+function rows(v: unknown): Record<string, unknown>[] {
+  // 예전 형식(여러 줄 텍스트)이나 잘못된 값은 빈 목록으로 (더미 데이터만 있던 시기의 형식)
+  return Array.isArray(v) ? v.filter((x) => x && typeof x === "object") : [];
+}
+
+/** 빈 줄 제거, 앞뒤 공백 제거 */
+export function toEducation(v: unknown): EducationEntry[] {
+  return rows(v)
+    .map((r) => ({ degree: str(r.degree), school: str(r.school), major: str(r.major) }))
+    .filter((e) => e.degree || e.school || e.major);
+}
+
+/** 빈 줄 제거, 앞뒤 공백 제거. 제목에 직접 넣은 「」·『』는 떼어낸다 (출력 시 자동으로 붙임) */
+export function toExhibitions(v: unknown): ExhibitionEntry[] {
+  return rows(v)
+    .map((r) => ({
+      year: str(r.year),
+      title: str(r.title).replace(/^[「『]\s*/, "").replace(/\s*[」』]$/, ""),
+      venue: str(r.venue),
+      region: str(r.region),
+    }))
+    .filter((e) => e.year || e.title || e.venue || e.region);
+}
+
+/** 전시 경력 한 줄 출력: 「제목」, 장소, 지역 (빈 항목은 구분자째 생략) */
+export function formatExhibitionLine(e: ExhibitionEntry): string {
+  return [e.title && `「${e.title}」`, e.venue, e.region].filter(Boolean).join(", ");
+}
+
+/** DB에서 읽은 콘텐츠를 현재 형식으로 맞춘다 (예전 형식 데이터가 있어도 화면이 깨지지 않게) */
+export function coerceContent(c: ArtistContent | null | undefined): ArtistContent {
+  const src = c ?? EMPTY_CONTENT;
+  return {
+    ...EMPTY_CONTENT,
+    ...src,
+    education: toEducation(src.education),
+    exhibitions: toExhibitions(src.exhibitions),
+    works: Array.isArray(src.works) ? src.works : [],
+  };
+}
+
 /** 키 순서와 무관한 비교용 직렬화 */
 export function stableStringify(v: unknown): string {
   if (Array.isArray(v)) return `[${v.map(stableStringify).join(",")}]`;
@@ -171,8 +234,8 @@ export const EMPTY_CONTENT: ArtistContent = {
   name: "",
   profile_image: "",
   bio: "",
-  education: "",
-  exhibitions: "",
+  education: [],
+  exhibitions: [],
   website: "",
   works: [],
 };

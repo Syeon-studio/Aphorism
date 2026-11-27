@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import ArtistView from "@/components/ArtistView";
+import SiteNav from "@/components/SiteNav";
 import { getAdjacentArtists, getArtist, getArtists } from "@/lib/data";
 
 export async function generateStaticParams() {
@@ -36,12 +37,19 @@ export async function generateMetadata({ params }: PageProps<"/artists/[slug]">)
  */
 export default function ArtistPage({ params }: PageProps<"/artists/[slug]">) {
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-16 tablet:px-8">
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-16 tablet:px-8 wide:pt-20">
+      <Nav />
       <Suspense fallback={<p className="py-24 text-center text-sm opacity-60">불러오는 중…</p>}>
         <ArtistBody params={params} />
       </Suspense>
     </main>
   );
+}
+
+/** 메뉴의 작가 목록 (캐시된 데이터라 params와 무관하게 정적으로 그려진다) */
+async function Nav() {
+  const artists = await getArtists();
+  return <SiteNav artists={artists.map((a) => ({ slug: a.slug, name: a.name }))} />;
 }
 
 async function ArtistBody({ params }: Pick<PageProps<"/artists/[slug]">, "params">) {

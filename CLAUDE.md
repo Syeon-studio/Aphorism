@@ -39,8 +39,8 @@ src/app/api/edit/[token]/   save(임시저장·완료), upload(이미지) Route 
 src/app/admin/[adminToken]/ 관리자 대시보드, artists/[id](관리자 편집·미리보기)
 src/app/api/admin/[adminToken]/  POST {action}(설정·작가 관리), artists/[id]/save·upload(마감 무시)
 src/components/Poster/      포스터 (독립 폴더. 디자인 교체는 이 안에서만)
-src/components/             ArtistView(작가 화면 본문, 공개·미리보기 공용), ArtistGrid, ExhibitionInfo, ArtistWorks(메이슨리), Lightbox, WorkCredit, Reveal, Footer
-src/components/editor/      Editor(편집 화면), WorkCard(작품 카드·dnd-kit), ImagePicker, fields
+src/components/             SiteNav(공개 사이트 메뉴), ArtistView(작가 화면 본문, 공개·미리보기 공용), ArtistGrid, ExhibitionInfo, ArtistWorks(메이슨리), Lightbox, WorkCredit, Reveal, Footer
+src/components/editor/      Editor(편집 화면), WorkCard(작품 카드·dnd-kit), RowsEditor(학력·전시 경력 줄 입력), ImagePicker, fields
 src/lib/content.ts          작가 콘텐츠 검증(validateContent, 서버·브라우저 공용), 비교·이미지 참조 유틸
 src/lib/edit/               server.ts(토큰 조회·마감·저장·업로드·이미지 정리), handlers.ts(저장·업로드 요청 처리, 작가·관리자 공용), load.ts, image-client.ts
 src/lib/admin/              server.ts(ADMIN_TOKEN 확인·작가 관리·설정 저장), load.ts
@@ -51,7 +51,7 @@ src/lib/supabase/server.ts  서버 전용 Supabase 클라이언트(service key),
 src/lib/                    exhibition.ts(기본 설정·저작권자), format.ts(KST 날짜 표기), credit.ts, masonry.ts, site.ts
 supabase/                   migrations/0001_init.sql(스키마), seed.sql(자동 생성), README.md(설정 절차)
 src/types/content.ts        작가·작품 JSON 타입 (기획서 4장)
-data/sample.json            1단계 더미 데이터 (scripts/generate-sample.mjs로 생성. 작가명만 실명)
+data/sample.json            더미 데이터 (scripts/generate-sample.mjs로 생성. 작가명만 실명, 글은 Lorem Ipsum: 서문 300·소개 200·작품설명 150자)
 public/sample/              더미 이미지 (seed 데이터가 참조. 실제 사진으로 모두 교체된 뒤 삭제)
 ```
 
@@ -68,11 +68,17 @@ public/sample/              더미 이미지 (seed 데이터가 참조. 실제 �
 
 - 브레이크포인트: 기본 = 모바일(<768), `tablet:`(≥768), `desktop:`(≥1200). Tailwind 기본 sm/md/lg/xl은 꺼져 있다.
 - 모바일 우선. 공개·편집 화면 모두 360px 폭에서 깨지지 않을 것.
-- 메인 작가 그리드 2/4/4열, 작가 상세 메이슨리 2/3/3열(JS로 순서대로 가장 짧은 열에 배치, 저장된 width/height로 자리 확보, 크롭 없음).
+- 메뉴(`SiteNav`, 메인·작가 페이지): `wide:`는 상단 고정 바(참여작가에 작가명 드롭다운), 그 외는 오른쪽 위 햄버거 → 전체 화면 메뉴.
+  항목 Home(/#top) · 전시 서문(/#intro) · 참여작가(/#artists, 작가명 → /artists/slug) · Contact(/#contact). 섹션은 `scroll-mt-14`.
+- 메인 작가 그리드 2/4/4열, 썸네일 정사각형(object-cover). 작가 상세 메이슨리 2/3/3열(JS로 순서대로 가장 짧은 열에 배치, 저장된 width/height로 자리 확보, 크롭 없음).
 - 메이슨리는 2열·3열 배치를 서버에서 모두 계산하고 CSS로 전환한다(화면 폭을 JS로 재지 않음).
   DOM은 작가가 정한 순서 그대로 두고 CSS grid 위치(열·행)로 배치한다 — 키보드·화면 낭독기 순서 유지. 열 단위 DOM으로 되돌리지 말 것.
 - 라이트박스: `<dialog>` 항상 마운트 + showModal/close. 배치 전환은 커스텀 variant `wide:`
-  (≥1200px 또는 ≥768px 가로) — globals.css 참고. 배경 클릭 = 사진·버튼·글자 이외 영역.
+  (≥1200px 또는 ≥768px 가로) — globals.css 참고. 배경 클릭 = 사진·버튼·글자·`[data-keep]` 이외 영역.
+  좁은 화면의 ← → 버튼은 화면 하단 고정 바.
+- 학력·전시 경력은 줄 단위 배열(`EducationEntry`·`ExhibitionEntry`). 공개 화면은 CSS grid 열 정렬,
+  전시제목은 출력 시 「」 자동(`formatExhibitionLine`). 편집 화면 기본 줄 수 학력 3·전시 10, 빈 줄은 저장 시 제거.
+  DB에서 읽은 콘텐츠는 `coerceContent()`로 정규화(예전 텍스트 형식이어도 화면이 깨지지 않게).
 - `cacheComponents` 때문에 `dynamicParams` 설정 불가. 없는 작가 주소는 200 + 자동 `noindex`로 응답한다(문서상 정상 동작).
 - 포스터는 SVG 코드, `components/Poster/`에 분리, 3구도(데스크톱/태블릿/모바일), `aria-label` 필수.
 - 이미지: `next/image`, 썸네일(600px)만 목록에서 로드. 모든 작품 이미지 alt = 작품 제목.
