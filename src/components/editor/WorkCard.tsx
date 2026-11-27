@@ -72,8 +72,12 @@ export default function WorkCard({
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
-          className="flex min-w-0 flex-1 items-center gap-3 rounded-lg py-1 text-left"
+          className="flex min-w-0 flex-1 items-center gap-2 rounded-lg py-1 text-left tablet:gap-3"
         >
+          {/* 순서 번호 (공개 페이지에 이 순서대로 보인다) */}
+          <span className="w-6 shrink-0 text-center text-lg font-bold tabular-nums" aria-hidden="true">
+            {n}
+          </span>
           <span className="h-12 w-12 shrink-0 overflow-hidden rounded bg-black/5">
             {imageSrc && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -81,12 +85,13 @@ export default function WorkCard({
             )}
           </span>
           <span className="min-w-0">
-            <span className="block text-xs opacity-50">작품 {n}</span>
+            <span className="sr-only">작품 {n}</span>
             <span className="block truncate font-bold">{work.title || "(제목 없음)"}</span>
             {missing && <span className="block text-xs text-[#d33]">{missing} 필요</span>}
           </span>
           <span className="ml-auto shrink-0 px-1 text-sm opacity-50" aria-hidden="true">
-            {open ? "접기 ▴" : "펼치기 ▾"}
+            <span className="hidden tablet:inline">{open ? "접기 " : "펼치기 "}</span>
+            {open ? "▴" : "▾"}
           </span>
         </button>
         <div className="flex shrink-0 flex-col">

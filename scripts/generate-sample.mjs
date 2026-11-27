@@ -69,8 +69,8 @@ const EDU = [
   { degree: "MFA", school: "OO대학교 대학원", major: "회화" },
   { degree: "BFA", school: "OO대학교", major: "서양화" },
 ];
-// 전시 경력 더미: "2026 「전시제목」, 전시장, 서울"로 통일
-const EXH = Array.from({ length: 5 }, () => ({ year: "2026", title: "전시제목", venue: "전시장", region: "서울" }));
+// 전시 경력 더미: "2026 「전시제목」, 전시장, 서울" 형식, 위에서부터 최신순 (2026 → 2022)
+const EXH = Array.from({ length: 5 }, (_, i) => ({ year: String(2026 - i), title: "전시제목", venue: "전시장", region: "서울" }));
 
 function hsl(h, s, l) {
   return `hsl(${h % 360}, ${s}%, ${l}%)`;
