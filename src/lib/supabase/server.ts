@@ -47,3 +47,9 @@ export function imageUrl(path: string): string {
   const base = getSupabaseUrl();
   return base ? `${base}/storage/v1/object/public/${IMAGE_BUCKET}/${path}` : path;
 }
+
+/** 브라우저에서 Storage 경로를 URL로 바꿀 때 쓰는 접두사 (공개 버킷이라 노출돼도 무방) */
+export function imageBaseUrl(): string {
+  const base = getSupabaseUrl();
+  return base ? `${base}/storage/v1/object/public/${IMAGE_BUCKET}/` : "/";
+}

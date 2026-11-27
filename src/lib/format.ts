@@ -56,3 +56,10 @@ export function formatDateTime(iso: string | null, withYear = true): string {
   const date = new Date(iso);
   return `${formatDay(date, withYear)} ${parts(date).time}`;
 }
+
+/** "12/03 14:20" (편집 화면 상태 표시용) */
+export function formatShort(iso: string | null): string {
+  if (!iso) return "";
+  const p = parts(new Date(iso));
+  return `${p.month.padStart(2, "0")}/${p.day.padStart(2, "0")} ${p.time}`;
+}
