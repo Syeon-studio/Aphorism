@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ArtistWorks from "@/components/ArtistWorks";
+import { formatExhibitionLine } from "@/lib/content";
 import type { ArtistContent } from "@/types/content";
 
 type Neighbor = { slug: string; name: string };
@@ -23,8 +24,8 @@ export default function ArtistView({
     <>
       {!preview && (
         <nav aria-label="사이트">
-          <Link href="/" className="inline-block py-2 text-sm underline-offset-4 hover:underline">
-            ← 전시 메인
+          <Link href="/#artists" className="inline-block py-2 text-sm underline-offset-4 hover:underline">
+            ← 참여작가 목록
           </Link>
         </nav>
       )}
@@ -48,16 +49,33 @@ export default function ArtistView({
         </div>
 
         <div className="grid gap-8 text-sm leading-relaxed tablet:grid-cols-2 desktop:grid-cols-1">
-          {artist.education && (
+          {artist.education.length > 0 && (
             <section>
               <h2 className="mb-2 font-bold">학력</h2>
-              <p className="whitespace-pre-line opacity-80">{artist.education}</p>
+              {/* 학위 · 학교 · 전공을 열로 정렬 (줄마다 같은 위치에서 시작) */}
+              <dl className="grid grid-cols-[auto_auto_1fr] gap-x-4 gap-y-1 opacity-80">
+                {artist.education.map((e, i) => (
+                  <div key={i} className="contents">
+                    <dt>{e.degree}</dt>
+                    <dd>{e.school}</dd>
+                    <dd>{e.major}</dd>
+                  </div>
+                ))}
+              </dl>
             </section>
           )}
-          {artist.exhibitions && (
+          {artist.exhibitions.length > 0 && (
             <section>
               <h2 className="mb-2 font-bold">전시 경력</h2>
-              <p className="whitespace-pre-line opacity-80">{artist.exhibitions}</p>
+              {/* 년도 열 고정, 나머지는 「제목」, 장소, 지역 */}
+              <dl className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-1 opacity-80">
+                {artist.exhibitions.map((e, i) => (
+                  <div key={i} className="contents">
+                    <dt className="tabular-nums">{e.year}</dt>
+                    <dd>{formatExhibitionLine(e)}</dd>
+                  </div>
+                ))}
+              </dl>
             </section>
           )}
         </div>
@@ -79,7 +97,7 @@ export default function ArtistView({
           <Link href={`/artists/${prev.slug}`} className="py-2 underline-offset-4 hover:underline">
             ← {prev.name}
           </Link>
-          <Link href="/#artists-title" className="py-2 text-sm opacity-60 hover:opacity-100">
+          <Link href="/#artists" className="py-2 text-sm opacity-60 hover:opacity-100">
             작가 목록
           </Link>
           <Link href={`/artists/${next.slug}`} className="py-2 underline-offset-4 hover:underline">

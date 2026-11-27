@@ -11,12 +11,13 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LIMITS, stableStringify, validateContent } from "@/lib/content";
+import { LIMITS, stableStringify, toEducation, toExhibitions, validateContent } from "@/lib/content";
 import { ImageError, processImage, uploadWithProgress } from "@/lib/edit/image-client";
 import { formatDateTime, formatShort } from "@/lib/format";
 import type { ArtistContent, Work } from "@/types/content";
 import { TextArea, TextField } from "./fields";
 import ImagePicker, { type UploadState } from "./ImagePicker";
+import { EducationRows, EMPTY_EDUCATION, EMPTY_EXHIBITION, ExhibitionRows, padRows } from "./RowsEditor";
 import WorkCard from "./WorkCard";
 
 export type EditorProps = {
@@ -42,13 +43,27 @@ type Notice = { kind: "ok" | "error"; text: string; details?: string[] } | null;
 
 const CLOSED_MESSAGE = "수정 기간이 종료되었습니다. 변경이 필요하면 관리자에게 연락해주세요.";
 
+/** 빈 입력 줄을 채운 편집용 상태 (학력 3줄·전시 경력 10줄) */
+function withBlankRows(c: ArtistContent): ArtistContent {
+  return {
+    ...c,
+    education: padRows(c.education, 3, EMPTY_EDUCATION),
+    exhibitions: padRows(c.exhibitions, 10, EMPTY_EXHIBITION),
+  };
+}
+
+/** 변경 여부 비교용: 빈 줄은 무시 */
+function compareKey(c: ArtistContent): string {
+  return stableStringify({ ...c, education: toEducation(c.education), exhibitions: toExhibitions(c.exhibitions) });
+}
+
 function newWorkId() {
   return "w" + crypto.randomUUID().replace(/-/g, "").slice(0, 10);
 }
 
 export default function Editor(props: EditorProps) {
-  const [content, setContent] = useState<ArtistContent>(props.initialContent);
-  const [savedKey, setSavedKey] = useState(() => stableStringify(props.initialContent));
+  const [content, setContent] = useState<ArtistContent>(() => withBlankRows(props.initialContent));
+  const [savedKey, setSavedKey] = useState(() => compareKey(props.initialContent));
   const [baseUpdatedAt, setBaseUpdatedAt] = useState(props.initialUpdatedAt);
   const [status, setStatus] = useState({
     publishedAt: props.publishedAt,
@@ -61,7 +76,7 @@ export default function Editor(props: EditorProps) {
   const [notice, setNotice] = useState<Notice>(null);
   const [newIds, setNewIds] = useState<Set<string>>(() => new Set());
 
-  const dirty = useMemo(() => stableStringify(content) !== savedKey, [content, savedKey]);
+  const dirty = useMemo(() => compareKey(content) !== savedKey, [content, savedKey]);
   const uploading = Object.values(uploads).some(Boolean);
   const locked = closed;
 
@@ -198,8 +213,8 @@ export default function Editor(props: EditorProps) {
         return false;
       }
       // 서버와 같은 정리된 내용(앞뒤 공백 제거 등)으로 맞춘다
-      setContent(checked.content);
-      setSavedKey(stableStringify(checked.content));
+      setContent(withBlankRows(checked.content));
+      setSavedKey(compareKey(checked.content));
       setBaseUpdatedAt(body.updated_at);
       setStatus((s) => ({
         publishedAt: body.published_at,
@@ -296,14 +311,14 @@ export default function Editor(props: EditorProps) {
             <ImagePicker
               src={src(content.profile_image)}
               alt="대표 사진"
-              aspect="4 / 5"
+              aspect="1 / 1"
               state={uploads.profile ?? null}
               disabled={locked}
               onSelect={(f) => handleImage("profile", f, "profile")}
               onRemove={() => set({ profile_image: "" })}
               label="대표 사진 올리기"
             />
-            <p className="mt-1 text-xs opacity-60">메인 작가 목록에 4:5 비율로 보입니다.</p>
+            <p className="mt-1 text-xs opacity-60">메인 작가 목록에는 가운데를 기준으로 정사각형으로 잘려 보입니다.</p>
           </div>
           <div className="grid gap-5">
             <TextField label="작가명" required value={content.name} onChange={(v) => set({ name: v })} maxLength={LIMITS.name} />
@@ -317,23 +332,9 @@ export default function Editor(props: EditorProps) {
               placeholder="https://"
             />
           </div>
-          <div className="grid gap-5 tablet:col-span-2 tablet:grid-cols-2">
-            <TextArea
-              label="학력"
-              value={content.education}
-              onChange={(v) => set({ education: v })}
-              maxLength={LIMITS.education}
-              rows={5}
-              hint="줄바꿈이 그대로 표시됩니다."
-            />
-            <TextArea
-              label="전시 경력"
-              value={content.exhibitions}
-              onChange={(v) => set({ exhibitions: v })}
-              maxLength={LIMITS.exhibitions}
-              rows={5}
-              hint="줄바꿈이 그대로 표시됩니다."
-            />
+          <div className="grid gap-8 tablet:col-span-2">
+            <EducationRows rows={content.education} onChange={(education) => set({ education })} disabled={locked} />
+            <ExhibitionRows rows={content.exhibitions} onChange={(exhibitions) => set({ exhibitions })} disabled={locked} />
           </div>
         </fieldset>
       </section>

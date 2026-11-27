@@ -13,7 +13,7 @@ const POSTER_LABEL =
 
 export default function Poster() {
   return (
-    <section className="poster relative h-svh w-full overflow-hidden">
+    <section id="top" className="poster relative h-svh w-full overflow-hidden">
       {/* role="img" 안의 요소는 보조기기에 숨겨지므로 스크롤 링크는 바깥에 둔다 */}
       <div
         role="img"

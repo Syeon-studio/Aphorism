@@ -107,7 +107,7 @@ export default function Lightbox({
       onKeyDown={onKeyDown}
       onClick={(e) => {
         // 배경 클릭으로 닫기: 사진·버튼·글자 이외의 빈 곳을 누르면 닫는다
-        if (!(e.target as HTMLElement).closest("img, button, a, p, span")) onClose();
+        if (!(e.target as HTMLElement).closest("img, button, a, p, span, [data-keep]")) onClose();
       }}
       className="lightbox m-0 h-dvh max-h-none w-screen max-w-none bg-black/85 p-0 text-white backdrop:bg-transparent"
     >
@@ -136,7 +136,7 @@ export default function Lightbox({
           </div>
 
           {/* 텍스트 영역 */}
-          <div className="px-4 pt-5 pb-[calc(2rem+env(safe-area-inset-bottom))] wide:flex wide:h-full wide:w-[360px] wide:shrink-0 wide:flex-col wide:border-l wide:border-white/10 wide:bg-black/50 wide:p-0 wide:pr-[env(safe-area-inset-right)]">
+          <div className="px-4 pt-5 pb-[calc(6rem+env(safe-area-inset-bottom))] wide:flex wide:h-full wide:w-[360px] wide:shrink-0 wide:flex-col wide:border-l wide:border-white/10 wide:bg-black/50 wide:p-0 wide:pr-[env(safe-area-inset-right)]">
             <div
               data-scroll
               className="contents wide:block wide:flex-1 wide:overflow-y-auto wide:px-6 wide:pt-[calc(4.5rem+env(safe-area-inset-top))] wide:pb-6"
@@ -145,9 +145,8 @@ export default function Lightbox({
                 work={work}
                 className="space-y-1 text-center leading-relaxed wide:text-left [&>p:first-child]:text-lg"
               />
-              <div className="my-6 wide:hidden">{navButtons}</div>
               {work.description && (
-                <p className="mx-auto max-w-prose text-sm leading-loose whitespace-pre-line opacity-85 wide:mt-6">
+                <p className="mx-auto mt-6 max-w-prose text-sm leading-loose whitespace-pre-line opacity-85">
                   {work.description}
                 </p>
               )}
@@ -156,6 +155,13 @@ export default function Lightbox({
               {navButtons}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* 모바일·태블릿 세로: 이동 버튼은 화면 하단에 고정 (작품 설명을 스크롤해도 항상 보이게) */}
+      {work && (
+        <div data-keep className="fixed inset-x-0 bottom-0 border-t border-white/10 bg-black/90 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] wide:hidden">
+          {navButtons}
         </div>
       )}
 

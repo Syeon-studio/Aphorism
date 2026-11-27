@@ -1,5 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import sample from "../../data/sample.json";
+import { coerceContent } from "@/lib/content";
 import { DEFAULT_SETTINGS } from "@/lib/exhibition";
 import { getSupabase, imageUrl } from "@/lib/supabase/server";
 import type { ArtistContent, PublicArtist, Settings } from "@/types/content";
@@ -44,7 +45,8 @@ export async function getSettings(): Promise<Settings> {
 
 /* ------------------------------------------------------------------ artists */
 
-function withImageUrls(content: ArtistContent): ArtistContent {
+function withImageUrls(raw: ArtistContent): ArtistContent {
+  const content = coerceContent(raw);
   return {
     ...content,
     profile_image: imageUrl(content.profile_image),
@@ -64,7 +66,9 @@ export async function getArtists(): Promise<PublicArtist[]> {
 
   const db = getSupabase();
   if (!db) {
-    return (sample.artists as PublicArtist[]).slice().sort((a, b) => a.sort_order - b.sort_order);
+    return (sample.artists as unknown as PublicArtist[])
+      .map((a) => ({ ...a, ...coerceContent(a) }))
+      .sort((a, b) => a.sort_order - b.sort_order);
   }
 
   const { data, error } = await db
