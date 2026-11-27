@@ -26,22 +26,26 @@ npm run dev     # 개발 서버 (http://localhost:3000)
 npm run lint
 npm run typecheck  # 라우트 타입 생성 + tsc
 npm run build   # 커밋 전 통과 확인
+node scripts/generate-sample.mjs  # 더미 데이터·이미지 재생성 (1단계 전용)
 ```
 
 ## 구조
 
 ```
-src/app/            라우트. robots.ts, sitemap.ts 포함
-src/components/     Footer, WorkCredit, (예정) Poster/ 독립 폴더
-src/lib/            exhibition.ts(전시 정보), credit.ts(크레딧 형식), site.ts(사이트 URL)
-src/types/          content.ts — 작가·작품 JSON 타입 (기획서 4장)
-data/               1단계용 sample.json (예정)
+src/app/                    / (메인), /artists/[slug] (작가 상세), robots.ts, sitemap.ts, not-found.tsx
+src/components/Poster/      포스터 (독립 폴더. 디자인 교체는 이 안에서만)
+src/components/             ArtistGrid, ExhibitionInfo, ArtistWorks(메이슨리), Lightbox, WorkCredit, Reveal, Footer
+src/lib/data.ts             공개 데이터 접근 계층 — 2단계에서 이 파일 내부만 Supabase로 교체
+src/lib/                    exhibition.ts(전시 정보), credit.ts(크레딧), masonry.ts(열 배치), site.ts(사이트 URL)
+src/types/content.ts        작가·작품 JSON 타입 (기획서 4장)
+data/sample.json            1단계 더미 데이터 (scripts/generate-sample.mjs로 생성. 작가명만 실명)
+public/sample/              더미 이미지 (2단계 이후 삭제)
 ```
 
 ## 개발 단계 (기획서 6장)
 
-1. 공개 사이트 — `data/sample.json`(작가 8명 실명 + 더미 소개·작품 4점)으로 메인·상세·라이트박스. 포스터는 임시 SVG  ← 현재
-2. DB 연결 — Supabase 테이블(settings, artists)·Storage, 공개 사이트가 published 읽기
+1. 공개 사이트 — `data/sample.json`(작가 8명 실명 + 더미 소개·작품 4점)으로 메인·상세·라이트박스. 포스터는 임시 SVG  ✅ 완료 (작가 slug는 임시 로마자 — 확인 필요)
+2. DB 연결 — Supabase 테이블(settings, artists)·Storage, 공개 사이트가 published 읽기  ← 다음
 3. 작가 편집 화면 `/edit/[token]` — 정보·작품 입력, 순서 변경, 이미지 업로드, 임시저장·완료
 4. 관리자 화면 `/admin/[admin_token]` — 작가 추가·토큰, 전시 정보, 마감 일시, 미공개 변경, 백업 복구
 5. 마감 — 최종 포스터, `public/og.png`(1200×630), 실기기 테스트, 성능 점검
@@ -51,6 +55,10 @@ data/               1단계용 sample.json (예정)
 - 브레이크포인트: 기본 = 모바일(<768), `tablet:`(≥768), `desktop:`(≥1200). Tailwind 기본 sm/md/lg/xl은 꺼져 있다.
 - 모바일 우선. 공개·편집 화면 모두 360px 폭에서 깨지지 않을 것.
 - 메인 작가 그리드 2/4/4열, 작가 상세 메이슨리 2/3/3열(JS로 순서대로 가장 짧은 열에 배치, 저장된 width/height로 자리 확보, 크롭 없음).
+- 메이슨리는 2열·3열 배치를 서버에서 모두 계산하고 CSS로 전환한다(화면 폭을 JS로 재지 않음).
+- 라이트박스: `<dialog>` 항상 마운트 + showModal/close. 배치 전환은 커스텀 variant `wide:`
+  (≥1200px 또는 ≥768px 가로) — globals.css 참고. 배경 클릭 = 사진·버튼·글자 이외 영역.
+- `cacheComponents` 때문에 `dynamicParams` 설정 불가. 없는 작가 주소는 200 + 자동 `noindex`로 응답한다(문서상 정상 동작).
 - 포스터는 SVG 코드, `components/Poster/`에 분리, 3구도(데스크톱/태블릿/모바일), `aria-label` 필수.
 - 이미지: `next/image`, 썸네일(600px)만 목록에서 로드. 모든 작품 이미지 alt = 작품 제목.
 - `prefers-reduced-motion`이면 애니메이션 끔 (globals.css에 전역 처리 있음).

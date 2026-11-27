@@ -1,39 +1,43 @@
-import { ARTIST_NAMES, EXHIBITION } from "@/lib/exhibition";
+import ArtistGrid from "@/components/ArtistGrid";
+import ExhibitionInfo from "@/components/ExhibitionInfo";
+import Poster from "@/components/Poster";
+import Reveal from "@/components/Reveal";
+import { getArtists, getIntroText } from "@/lib/data";
+import { EXHIBITION } from "@/lib/exhibition";
 
-// 초기 세팅용 임시 메인. 1단계에서 포스터·서문·작가 목록·전시 정보로 교체한다.
-export default function Home() {
+export default async function Home() {
+  const [intro, artists] = await Promise.all([getIntroText(), getArtists()]);
+
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-16 tablet:px-8">
-      <h1 className="text-3xl font-bold tablet:text-5xl">{EXHIBITION.title}</h1>
+    <main className="flex-1">
+      <h1 className="sr-only">{EXHIBITION.title}</h1>
+      <Poster />
 
-      <dl className="mt-10 grid grid-cols-[5rem_1fr] gap-x-4 gap-y-2">
-        <dt className="opacity-60">기간</dt>
-        <dd>{EXHIBITION.periodLabel}</dd>
-        <dt className="opacity-60">운영</dt>
-        <dd>{EXHIBITION.hoursLabel}</dd>
-        <dt className="opacity-60">휴관</dt>
-        <dd>{EXHIBITION.closedLabel}</dd>
-        <dt className="opacity-60">입장료</dt>
-        <dd>{EXHIBITION.admission}</dd>
-        <dt className="opacity-60">장소</dt>
-        <dd>
-          {EXHIBITION.venue}
-          <br />
-          <a
-            href={EXHIBITION.mapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4"
-          >
-            {EXHIBITION.address}
-          </a>
-        </dd>
-      </dl>
+      <div className="mx-auto w-full max-w-6xl px-4 tablet:px-8">
+        <section id="intro" aria-labelledby="intro-title" className="scroll-mt-4 py-20 tablet:py-28">
+          <Reveal className="mx-auto max-w-2xl">
+            <h2 id="intro-title" className="text-xl font-bold">
+              전시 서문
+            </h2>
+            <p className="mt-6 text-lg leading-loose whitespace-pre-line">{intro}</p>
+          </Reveal>
+        </section>
 
-      <section className="mt-12">
-        <h2 className="text-lg font-bold">참여 작가</h2>
-        <p className="mt-2">{ARTIST_NAMES.join(", ")}</p>
-      </section>
+        <section aria-labelledby="artists-title" className="py-16 tablet:py-20">
+          <Reveal>
+            <h2 id="artists-title" className="mb-8 text-xl font-bold">
+              참여 작가
+            </h2>
+            <ArtistGrid artists={artists} />
+          </Reveal>
+        </section>
+
+        <section id="info" aria-label="전시 정보와 연락처" className="py-16 tablet:py-20">
+          <Reveal>
+            <ExhibitionInfo />
+          </Reveal>
+        </section>
+      </div>
     </main>
   );
 }
