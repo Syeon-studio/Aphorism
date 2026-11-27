@@ -34,6 +34,11 @@ export async function handleUpload(request: Request, artist: EditableArtist): Pr
   const thumb = form.get("thumb");
   if (!(thumb instanceof File)) throw new EditError(400, "사진 파일이 없습니다.");
 
+  if (kind === "portrait") {
+    // 브라우저에서 이미 정사각형으로 잘라 보낸다
+    const paths = await uploadImages(artist, "portrait", { thumb });
+    return Response.json({ image: paths.image_thumb }, { headers: NO_STORE });
+  }
   if (kind === "profile") {
     const paths = await uploadImages(artist, "profile", { thumb });
     return Response.json({ image: paths.image_thumb }, { headers: NO_STORE });

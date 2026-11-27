@@ -77,7 +77,9 @@ public/sample/              더미 이미지 (seed 데이터가 참조. 실제 �
   (≥1200px 또는 ≥768px 가로) — globals.css 참고. 배경 클릭 = 사진·버튼·글자·`[data-keep]` 이외 영역.
   좁은 화면의 ← → 버튼은 화면 하단 고정 바.
 - 학력·전시 경력은 줄 단위 배열(`EducationEntry`·`ExhibitionEntry`). 공개 화면은 CSS grid 열 정렬,
-  전시제목은 출력 시 「」 자동(`formatExhibitionLine`). 편집 화면 기본 줄 수 학력 3·전시 10, 빈 줄은 저장 시 제거.
+  전시제목은 출력 시 「」 자동(`formatExhibitionLine`). 편집 화면 기본 줄 수 학력 3·전시 5, 빈 줄은 저장 시 제거.
+- 작가 사진 2종: `portrait_image`(작가 프로필 사진 — 브라우저에서 가운데 기준 정사각형 800px로 잘라 저장, 흰 배경 안내, 작가 상세 이름 위),
+  `profile_image`(대표 작품 사진 — 메인 목록 정사각형 썸네일·공유 미리보기). 작가 소개·작품 설명은 500자 제한.
   DB에서 읽은 콘텐츠는 `coerceContent()`로 정규화(예전 텍스트 형식이어도 화면이 깨지지 않게).
 - `cacheComponents` 때문에 `dynamicParams` 설정 불가. 없는 작가 주소는 200 + 자동 `noindex`로 응답한다(문서상 정상 동작).
 - 포스터는 SVG 코드, `components/Poster/`에 분리, 3구도(데스크톱/태블릿/모바일), `aria-label` 필수.

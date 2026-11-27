@@ -6,7 +6,8 @@ import imageCompression from "browser-image-compression";
  * 업로드 전 브라우저에서 사진 처리 (기획서 3-4).
  * - 허용: JPG·PNG·HEIC, 원본 20MB 이하
  * - 폰 사진 회전(EXIF) 보정
- * - 작품: 확대용(긴 변 1920px) + 썸네일(가로 600px), 대표 사진: 썸네일만
+ * - 작품: 확대용(긴 변 1920px) + 썸네일(가로 600px), 대표 작품 사진: 썸네일만
+ * - 프로필 사진: 가운데 기준 정사각형으로 잘라 800×800
  * - WebP로 저장, 브라우저가 WebP를 못 만들면 JPEG
  */
 
@@ -62,7 +63,24 @@ async function resize(file: File, maxWidthOrHeight: number, fileType: string): P
   });
 }
 
-export async function processImage(file: File, kind: "work" | "profile"): Promise<ProcessedImage> {
+/** 가운데 기준 정사각형으로 잘라 size×size로 (EXIF 회전은 createImageBitmap이 반영) */
+async function cropSquare(source: File, size: number, type: string): Promise<File> {
+  const bmp = await createImageBitmap(source, { imageOrientation: "from-image" });
+  const side = Math.min(bmp.width, bmp.height);
+  const out = Math.min(size, side); // 작은 사진은 키우지 않는다
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = out;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new ImageError("사진을 처리하지 못했습니다.");
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(bmp, (bmp.width - side) / 2, (bmp.height - side) / 2, side, side, 0, 0, out, out);
+  bmp.close();
+  const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, type, 0.85));
+  if (!blob) throw new ImageError("사진을 처리하지 못했습니다.");
+  return new File([blob], type === "image/webp" ? "portrait.webp" : "portrait.jpg", { type });
+}
+
+export async function processImage(file: File, kind: "work" | "profile" | "portrait"): Promise<ProcessedImage> {
   if (file.size > MAX_ORIGINAL_BYTES) throw new ImageError("사진 용량은 20MB 이하만 올릴 수 있습니다.");
   const okType = /image\/(jpeg|png)/i.test(file.type) || isHeic(file) || /\.(jpe?g|png)$/i.test(file.name);
   if (!okType) throw new ImageError("JPG, PNG, HEIC 사진만 올릴 수 있습니다.");
@@ -78,6 +96,10 @@ export async function processImage(file: File, kind: "work" | "profile"): Promis
 
   const type = canEncodeWebp() ? "image/webp" : "image/jpeg";
   try {
+    if (kind === "portrait") {
+      const thumb = await cropSquare(source, 800, type);
+      return { full: null, thumb, ...(await dimensions(thumb)) };
+    }
     if (kind === "profile") {
       const { width, height } = await dimensions(source);
       const thumb = await resize(source, Math.round(600 * Math.max(1, height / width)), type);

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import ArtistWorks from "@/components/ArtistWorks";
 import { formatExhibitionLine } from "@/lib/content";
@@ -32,6 +33,18 @@ export default function ArtistView({
 
       <header className="mt-8 grid gap-10 tablet:mt-12 desktop:grid-cols-[1fr_1fr] desktop:gap-16">
         <div>
+          {artist.portrait_image && (
+            // 프로필 사진: 업로드 때 이미 정사각형으로 잘려 있다
+            <Image
+              src={artist.portrait_image}
+              alt={`${artist.name} 프로필 사진`}
+              width={800}
+              height={800}
+              sizes="160px"
+              loading="eager"
+              className="mb-6 h-32 w-32 object-cover tablet:h-40 tablet:w-40"
+            />
+          )}
           <h1 className="text-3xl font-bold tablet:text-4xl">{artist.name || "(작가명 없음)"}</h1>
           {artist.bio && <p className="mt-6 leading-loose whitespace-pre-line">{artist.bio}</p>}
           {artist.website && (
@@ -48,7 +61,7 @@ export default function ArtistView({
           )}
         </div>
 
-        <div className="grid gap-8 text-sm leading-relaxed tablet:grid-cols-2 desktop:grid-cols-1">
+        <div className="grid content-start gap-8 text-sm leading-relaxed tablet:grid-cols-2 desktop:grid-cols-1">
           {artist.education.length > 0 && (
             <section>
               <h2 className="mb-2 font-bold">학력</h2>

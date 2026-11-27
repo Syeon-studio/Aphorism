@@ -9,7 +9,7 @@ import type { ArtistContent, EducationEntry, ExhibitionEntry, Work } from "@/typ
 
 export const LIMITS = {
   name: 50,
-  bio: 3000,
+  bio: 500,
   // 학력 한 줄
   educationRows: 10,
   degree: 30,
@@ -25,7 +25,7 @@ export const LIMITS = {
   works: 40,
   title: 200,
   line: 200, // 년도·재료·크기·기타·촬영자 (한 줄 항목)
-  description: 3000,
+  description: 500,
   imagePath: 300,
 } as const;
 
@@ -74,6 +74,7 @@ export function validateContent(
   const exhibitions = toExhibitions(src.exhibitions);
   const website = str(src.website);
   const profile_image = str(src.profile_image);
+  const portrait_image = str(src.portrait_image);
 
   tooLong("작가명", name, LIMITS.name);
   tooLong("소개글", bio, LIMITS.bio);
@@ -94,7 +95,8 @@ export function validateContent(
   if (website && !/^https?:\/\/[^\s]+$/i.test(website)) {
     errors.push("웹사이트 주소는 http:// 또는 https://로 시작해야 합니다.");
   }
-  if (!isAllowedImagePath(profile_image, opts.artistId)) errors.push("대표 사진 경로가 올바르지 않습니다.");
+  if (!isAllowedImagePath(profile_image, opts.artistId)) errors.push("대표 작품 사진 경로가 올바르지 않습니다.");
+  if (!isAllowedImagePath(portrait_image, opts.artistId)) errors.push("프로필 사진 경로가 올바르지 않습니다.");
   if (opts.mode === "publish" && !name) errors.push("작가명을 입력해주세요.");
 
   const rawWorks = Array.isArray(src.works) ? src.works : [];
@@ -151,7 +153,7 @@ export function validateContent(
   if (errors.length) return { ok: false, errors };
   return {
     ok: true,
-    content: { name, profile_image, bio, education, exhibitions, website, works },
+    content: { name, profile_image, portrait_image, bio, education, exhibitions, website, works },
   };
 }
 
@@ -192,6 +194,7 @@ export function coerceContent(c: ArtistContent | null | undefined): ArtistConten
   return {
     ...EMPTY_CONTENT,
     ...src,
+    portrait_image: typeof src.portrait_image === "string" ? src.portrait_image : "",
     education: toEducation(src.education),
     exhibitions: toExhibitions(src.exhibitions),
     works: Array.isArray(src.works) ? src.works : [],
@@ -223,7 +226,7 @@ export function referencedImagePaths(...contents: (ArtistContent | null | undefi
   const set = new Set<string>();
   for (const c of contents) {
     if (!c) continue;
-    for (const p of [c.profile_image, ...(c.works ?? []).flatMap((w) => [w.image_full, w.image_thumb])]) {
+    for (const p of [c.profile_image, c.portrait_image ?? "", ...(c.works ?? []).flatMap((w) => [w.image_full, w.image_thumb])]) {
       if (p && !p.startsWith("/")) set.add(p);
     }
   }
@@ -233,6 +236,7 @@ export function referencedImagePaths(...contents: (ArtistContent | null | undefi
 export const EMPTY_CONTENT: ArtistContent = {
   name: "",
   profile_image: "",
+  portrait_image: "",
   bio: "",
   education: [],
   exhibitions: [],

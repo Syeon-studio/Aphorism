@@ -12,7 +12,7 @@ export default function ArtistGrid({ artists }: { artists: PublicArtist[] }) {
             <div className="relative aspect-square overflow-hidden bg-black/5">
               <Image
                 src={artist.profile_image}
-                alt={`${artist.name} 대표 사진`}
+                alt={`${artist.name} 대표 작품`}
                 fill
                 sizes="(min-width: 768px) 25vw, 50vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"

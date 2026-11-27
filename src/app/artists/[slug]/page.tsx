@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/artists/[slug]">)
     openGraph: {
       title: artist.name,
       description,
-      // 작가 페이지 공유 미리보기는 대표 사진 (기획서 5장)
+      // 작가 페이지 공유 미리보기는 대표 작품 사진 (기획서 5장)
       images: artist.profile_image ? [{ url: artist.profile_image, alt: artist.name }] : undefined,
     },
   };

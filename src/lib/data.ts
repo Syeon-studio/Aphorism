@@ -50,6 +50,7 @@ function withImageUrls(raw: ArtistContent): ArtistContent {
   return {
     ...content,
     profile_image: imageUrl(content.profile_image),
+    portrait_image: imageUrl(content.portrait_image ?? ""),
     works: (content.works ?? []).map((w) => ({
       ...w,
       image_full: imageUrl(w.image_full),
