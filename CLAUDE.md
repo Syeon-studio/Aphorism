@@ -36,11 +36,16 @@ node scripts/generate-seed-sql.mjs  # sample.json → supabase/seed.sql 재생�
 src/app/                    / (메인), /artists/[slug] (작가 상세), robots.ts, sitemap.ts, not-found.tsx
 src/app/edit/[token]/       작가 편집 화면 (+ preview/ 임시저장본 미리보기)
 src/app/api/edit/[token]/   save(임시저장·완료), upload(이미지) Route Handler
+src/app/admin/[adminToken]/ 관리자 대시보드, artists/[id](관리자 편집·미리보기)
+src/app/api/admin/[adminToken]/  POST {action}(설정·작가 관리), artists/[id]/save·upload(마감 무시)
 src/components/Poster/      포스터 (독립 폴더. 디자인 교체는 이 안에서만)
 src/components/             ArtistView(작가 화면 본문, 공개·미리보기 공용), ArtistGrid, ExhibitionInfo, ArtistWorks(메이슨리), Lightbox, WorkCredit, Reveal, Footer
 src/components/editor/      Editor(편집 화면), WorkCard(작품 카드·dnd-kit), ImagePicker, fields
 src/lib/content.ts          작가 콘텐츠 검증(validateContent, 서버·브라우저 공용), 비교·이미지 참조 유틸
-src/lib/edit/               server.ts(토큰 조회·마감·저장·업로드·이미지 정리), load.ts, image-client.ts(브라우저 리사이즈)
+src/lib/edit/               server.ts(토큰 조회·마감·저장·업로드·이미지 정리), handlers.ts(저장·업로드 요청 처리, 작가·관리자 공용), load.ts, image-client.ts
+src/lib/admin/              server.ts(ADMIN_TOKEN 확인·작가 관리·설정 저장), load.ts
+src/lib/settings-validate.ts 전시 설정 검증, KST datetime-local 변환, SLUG_FORMAT
+src/components/admin/       AdminDashboard
 src/lib/data.ts             공개 데이터 접근 계층 (getSettings, getArtists…). Supabase 환경변수 없으면 sample.json
 src/lib/supabase/server.ts  서버 전용 Supabase 클라이언트(service key), imageUrl(Storage 경로→URL)
 src/lib/                    exhibition.ts(기본 설정·저작권자), format.ts(KST 날짜 표기), credit.ts, masonry.ts, site.ts
@@ -55,8 +60,8 @@ public/sample/              더미 이미지 (seed 데이터가 참조. 실제 �
 1. 공개 사이트 — `data/sample.json`(작가 8명 실명 + 더미 소개·작품 4점)으로 메인·상세·라이트박스. 포스터는 임시 SVG  ✅ 완료 (작가 slug는 임시 로마자 — 확인 필요)
 2. DB 연결 — Supabase 테이블(settings, artists)·Storage, 공개 사이트가 published 읽기  ✅ 완료 (https://aphorism-tan.vercel.app)
 3. 작가 편집 화면 `/edit/[token]` — 정보·작품 입력, 순서 변경, 이미지 업로드, 임시저장·완료  ✅ 완료
-   다음 ← 4단계
-4. 관리자 화면 `/admin/[admin_token]` — 작가 추가·토큰, 전시 정보, 마감 일시, 미공개 변경, 백업 복구
+4. 관리자 화면 `/admin/[admin_token]` — 작가 추가·토큰, 전시 정보, 마감 일시, 미공개 변경, 백업 복구  ✅ 완료
+   (+ 작가 순서·주소 변경, 토큰 재발급, 공개 중단, 삭제). 다음 ← 5단계
 5. 마감 — 최종 포스터, `public/og.png`(1200×630), 실기기 테스트, 성능 점검
 
 ## 디자인·구현 규칙
@@ -84,6 +89,8 @@ public/sample/              더미 이미지 (seed 데이터가 참조. 실제 �
 - 이미지: 브라우저에서 확대용(긴 변 1920)·썸네일(가로 600) WebP(미지원 시 JPEG) 생성 → upload API → Storage.
   파일명에 랜덤 값(덮어쓰기 금지, 캐시 문제). 어디에도 안 쓰이는 파일은 저장 시 1시간 유예 후 삭제.
 - 편집·미리보기 페이지: `robots noindex` + `referrer: no-referrer` (토큰이 든 주소가 외부로 새지 않게).
+- 관리자: `ADMIN_TOKEN`(24자 이상) 일치 시에만, 틀리면 404. 비교는 timingSafeEqual. 관리자 저장은 마감 무시.
+  설정·작가 관리 후 `revalidatePath("/", "layout")` + 태그로 공개 사이트 전체 즉시 갱신.
 - 브라우저는 DB에 직접 쓰지 않는다. 저장은 Route Handler 경유, 서버에서 토큰↔작가 일치만 확인.
 
 ## 저작권·크레딧

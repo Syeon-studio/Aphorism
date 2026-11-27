@@ -35,6 +35,13 @@ Vercel 프로젝트 → Settings → Environment Variables 에 `SUPABASE_URL`, `
 
 환경변수가 없으면 사이트는 `data/sample.json`으로 동작한다 (로컬 개발용).
 
+## 5. 관리자 화면 (4단계)
+
+1. 관리자 토큰 만들기 (24자 이상 랜덤). 예: 비밀번호 관리자에서 32자 영문·숫자 비밀번호 생성
+2. Vercel 환경변수에 `ADMIN_TOKEN` 추가 → 최신 커밋으로 재배포
+3. 관리자 화면: `https://(사이트 주소)/admin/(ADMIN_TOKEN)` — 북마크해두고 공유하지 말 것
+4. 토큰이 틀리면 404가 뜬다. 유출이 의심되면 `ADMIN_TOKEN` 값을 바꾸고 재배포
+
 ## 문제 해결
 
 - 빌드 오류 `permission denied for table artists`

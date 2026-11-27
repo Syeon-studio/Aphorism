@@ -20,7 +20,11 @@ import ImagePicker, { type UploadState } from "./ImagePicker";
 import WorkCard from "./WorkCard";
 
 export type EditorProps = {
-  token: string;
+  /** 저장·업로드 API 접두사: 작가 "/api/edit/{token}", 관리자 "/api/admin/{admin}/artists/{id}" */
+  apiBase: string;
+  previewUrl: string;
+  /** 관리자 편집: 마감과 무관, 상단에 관리자 표시와 돌아가기 링크 */
+  admin?: { backHref: string };
   artistId: string;
   slug: string;
   /** Storage 공개 URL 접두사 ("…/storage/v1/object/public/images/") */
@@ -97,7 +101,7 @@ export default function Editor(props: EditorProps) {
       form.append("thumb", img.thumb, img.thumb.name || "thumb");
       setUploads((u) => ({ ...u, [key]: { phase: "uploading", percent: 0 } }));
       const res = await uploadWithProgress<{ error?: string; image?: string; image_full?: string; image_thumb?: string }>(
-        `/api/edit/${props.token}/upload`,
+        `${props.apiBase}/upload`,
         form,
         (percent) => setUploads((u) => ({ ...u, [key]: { phase: "uploading", percent } })),
       );
@@ -182,7 +186,7 @@ export default function Editor(props: EditorProps) {
     setBusy(action);
     setNotice(null);
     try {
-      const res = await fetch(`/api/edit/${props.token}/save`, {
+      const res = await fetch(`${props.apiBase}/save`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ content: checked.content, action, baseUpdatedAt }),
@@ -216,7 +220,7 @@ export default function Editor(props: EditorProps) {
   }
 
   async function openPreview() {
-    const url = `/edit/${props.token}/preview`;
+    const url = props.previewUrl;
     if (!dirty) {
       window.open(url, "_blank", "noopener");
       return;
@@ -239,7 +243,16 @@ export default function Editor(props: EditorProps) {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-40 tablet:px-8">
       <header>
-        <p className="text-sm opacity-60">Overload: 감정의 풍경 · 작가 페이지 편집</p>
+        {props.admin ? (
+          <p className="text-sm">
+            <a href={props.admin.backHref} className="underline underline-offset-4">
+              ← 관리자 화면
+            </a>
+            <span className="ml-2 rounded bg-black px-1.5 py-0.5 text-xs font-bold text-white">관리자 편집</span>
+          </p>
+        ) : (
+          <p className="text-sm opacity-60">Overload: 감정의 풍경 · 작가 페이지 편집</p>
+        )}
         <h1 className="mt-1 text-2xl font-bold">{content.name || "작가"} 님의 페이지</h1>
         <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" aria-live="polite">
           <span

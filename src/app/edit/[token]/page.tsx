@@ -30,7 +30,8 @@ async function EditLoader({ params }: Pick<PageProps<"/edit/[token]">, "params">
   const { artist, content, deadline, closed, hasUnpublished } = data;
   return (
     <Editor
-      token={token}
+      apiBase={`/api/edit/${token}`}
+      previewUrl={`/edit/${token}/preview`}
       artistId={artist.id}
       slug={artist.slug}
       imageBase={imageBaseUrl()}
