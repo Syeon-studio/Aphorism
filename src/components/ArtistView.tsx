@@ -62,6 +62,20 @@ export default function ArtistView({
         </div>
 
         <div className="grid content-start gap-8 text-sm leading-relaxed tablet:grid-cols-2 desktop:grid-cols-1">
+          {artist.exhibitions.length > 0 && (
+            <section>
+              <h2 className="mb-2 font-bold">전시 경력</h2>
+              {/* 년도 열 고정, 나머지는 「제목」, 장소, 지역 */}
+              <dl className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-1 opacity-80">
+                {artist.exhibitions.map((e, i) => (
+                  <div key={i} className="contents">
+                    <dt className="tabular-nums">{e.year}</dt>
+                    <dd>{formatExhibitionLine(e)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
           {artist.education.length > 0 && (
             <section>
               <h2 className="mb-2 font-bold">학력</h2>
@@ -72,20 +86,6 @@ export default function ArtistView({
                     <dt>{e.degree}</dt>
                     <dd>{e.school}</dd>
                     <dd>{e.major}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          )}
-          {artist.exhibitions.length > 0 && (
-            <section>
-              <h2 className="mb-2 font-bold">전시 경력</h2>
-              {/* 년도 열 고정, 나머지는 「제목」, 장소, 지역 */}
-              <dl className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-1 opacity-80">
-                {artist.exhibitions.map((e, i) => (
-                  <div key={i} className="contents">
-                    <dt className="tabular-nums">{e.year}</dt>
-                    <dd>{formatExhibitionLine(e)}</dd>
                   </div>
                 ))}
               </dl>

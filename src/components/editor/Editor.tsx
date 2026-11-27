@@ -351,8 +351,8 @@ export default function Editor(props: EditorProps) {
             />
           </div>
           <div className="grid gap-8 tablet:col-span-2">
-            <EducationRows rows={content.education} onChange={(education) => set({ education })} disabled={locked} />
             <ExhibitionRows rows={content.exhibitions} onChange={(exhibitions) => set({ exhibitions })} disabled={locked} />
+            <EducationRows rows={content.education} onChange={(education) => set({ education })} disabled={locked} />
           </div>
         </fieldset>
       </section>

@@ -28,7 +28,9 @@ export function EducationRows({
   const update = (i: number, patch: Partial<EducationEntry>) => onChange(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)));
   return (
     <fieldset disabled={disabled}>
-      <legend className="text-sm font-bold">학력</legend>
+      <legend className="text-sm font-bold">
+        학력 <span className="font-normal opacity-60">(선택 입력)</span>
+      </legend>
       <p className="mt-0.5 text-xs opacity-60">한 줄에 하나씩. 공개 페이지에서 학위·학교·전공이 열 맞춰 정렬됩니다.</p>
       <div className="mt-2 hidden grid-cols-[6rem_1fr_1fr_2.25rem] gap-2 px-0.5 text-xs opacity-60 tablet:grid" aria-hidden="true">
         <span>학위</span>
@@ -70,9 +72,12 @@ export function ExhibitionRows({
   const update = (i: number, patch: Partial<ExhibitionEntry>) => onChange(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)));
   return (
     <fieldset disabled={disabled}>
-      <legend className="text-sm font-bold">전시 경력</legend>
+      <legend className="text-sm font-bold">
+        전시 경력 <span className="text-[#d33]">(필수 입력)</span>
+      </legend>
       <p className="mt-0.5 text-xs opacity-60">
-        전시마다 한 줄씩. 전시제목에는 「」를 넣지 않아도 자동으로 붙습니다. 예: 2026 「전시제목」, 전시장, 서울
+        전시마다 한 줄씩, <strong>위에서부터 최신순</strong>으로 입력해주세요. 전시제목에는 「」를 넣지 않아도 자동으로 붙습니다.
+        예: 2026 「전시제목」, 전시장, 서울
       </p>
       <div className="mt-2 hidden grid-cols-[4.5rem_2fr_1.5fr_1fr_2.25rem] gap-2 px-0.5 text-xs opacity-60 tablet:grid" aria-hidden="true">
         <span>년도</span>

@@ -98,6 +98,7 @@ export function validateContent(
   if (!isAllowedImagePath(profile_image, opts.artistId)) errors.push("대표 작품 사진 경로가 올바르지 않습니다.");
   if (!isAllowedImagePath(portrait_image, opts.artistId)) errors.push("프로필 사진 경로가 올바르지 않습니다.");
   if (opts.mode === "publish" && !name) errors.push("작가명을 입력해주세요.");
+  if (opts.mode === "publish" && exhibitions.length === 0) errors.push("전시 경력을 1개 이상 입력해주세요.");
 
   const rawWorks = Array.isArray(src.works) ? src.works : [];
   if (rawWorks.length > LIMITS.works) errors.push(`작품은 ${LIMITS.works}점까지 등록할 수 있습니다.`);
