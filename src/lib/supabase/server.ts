@@ -8,14 +8,28 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
  */
 let client: SupabaseClient | null | undefined;
 
+/**
+ * SUPABASE_URL을 "https://xxxx.supabase.co" 형태(origin)로 정규화한다.
+ * 대시보드에서 복사할 때 "/rest/v1/"나 끝 "/"가 붙어 들어와도 동작하도록.
+ */
+export function getSupabaseUrl(): string | null {
+  const raw = process.env.SUPABASE_URL?.trim();
+  if (!raw) return null;
+  try {
+    return new URL(raw).origin;
+  } catch {
+    throw new Error("SUPABASE_URL 형식이 잘못되었습니다. 예: https://xxxx.supabase.co");
+  }
+}
+
 export function isSupabaseConfigured(): boolean {
   return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 export function getSupabase(): SupabaseClient | null {
   if (client !== undefined) return client;
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = getSupabaseUrl();
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
   client = url && key ? createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
   return client;
 }
@@ -30,6 +44,6 @@ export const IMAGE_BUCKET = "images";
  */
 export function imageUrl(path: string): string {
   if (!path || path.startsWith("/") || /^https?:\/\//.test(path)) return path;
-  const base = process.env.SUPABASE_URL?.replace(/\/$/, "");
+  const base = getSupabaseUrl();
   return base ? `${base}/storage/v1/object/public/${IMAGE_BUCKET}/${path}` : path;
 }
