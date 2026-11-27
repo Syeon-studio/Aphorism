@@ -20,7 +20,7 @@ const ARTISTS = [
   ["김태현", "kim-taehyun", 200],
   ["맹욱재", "maeng-ukjae", 95],
   ["박하영", "park-hayoung", 330],
-  ["시언", "sieon", 265],
+  ["시언", "syeon", 265],
   ["이민영", "lee-minyoung", 40],
   ["이철영", "lee-cheolyoung", 160],
   ["필독", "pildok", 300],

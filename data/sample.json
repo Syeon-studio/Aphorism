@@ -275,10 +275,10 @@
       ]
     },
     {
-      "slug": "sieon",
+      "slug": "syeon",
       "sort_order": 5,
       "name": "시언",
-      "profile_image": "/sample/sieon/profile.webp",
+      "profile_image": "/sample/syeon/profile.webp",
       "bio": "(더미 소개글) 일상에서 넘쳐흐르는 감정의 결을 붙잡아 화면 위에 펼쳐 놓는다. 감각이 과부하되는 순간과 그 이후에 남는 고요를 함께 기록하며, 보이지 않는 감정의 풍경을 색과 형태로 번역하는 작업을 이어오고 있다.",
       "education": "(더미) OO대학교 대학원 회화과 졸업\n(더미) OO대학교 미술대학 서양화과 졸업",
       "exhibitions": "개인전\n2025 (더미) 「감정의 온도」, 갤러리 OO, 서울\n\n단체전\n2026 Overload: 감정의 풍경, 역삼1동복합문화센터, 서울\n2024 (더미) 「사이의 풍경」, OO아트스페이스, 서울",
@@ -286,8 +286,8 @@
       "works": [
         {
           "id": "w1",
-          "image_full": "/sample/sieon/w1_full.webp",
-          "image_thumb": "/sample/sieon/w1_thumb.webp",
+          "image_full": "/sample/syeon/w1_full.webp",
+          "image_thumb": "/sample/syeon/w1_thumb.webp",
           "width": 1600,
           "height": 900,
           "title": "포화 상태",
@@ -300,8 +300,8 @@
         },
         {
           "id": "w2",
-          "image_full": "/sample/sieon/w2_full.webp",
-          "image_thumb": "/sample/sieon/w2_thumb.webp",
+          "image_full": "/sample/syeon/w2_full.webp",
+          "image_thumb": "/sample/syeon/w2_thumb.webp",
           "width": 1200,
           "height": 1600,
           "title": "고요의 무게",
@@ -314,8 +314,8 @@
         },
         {
           "id": "w3",
-          "image_full": "/sample/sieon/w3_full.webp",
-          "image_thumb": "/sample/sieon/w3_thumb.webp",
+          "image_full": "/sample/syeon/w3_full.webp",
+          "image_thumb": "/sample/syeon/w3_thumb.webp",
           "width": 1600,
           "height": 1280,
           "title": "번짐",
@@ -328,8 +328,8 @@
         },
         {
           "id": "w4",
-          "image_full": "/sample/sieon/w4_full.webp",
-          "image_thumb": "/sample/sieon/w4_thumb.webp",
+          "image_full": "/sample/syeon/w4_full.webp",
+          "image_thumb": "/sample/syeon/w4_thumb.webp",
           "width": 900,
           "height": 1600,
           "title": "얇은 막",
